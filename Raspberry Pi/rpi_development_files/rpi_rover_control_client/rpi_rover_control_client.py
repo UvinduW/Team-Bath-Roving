@@ -2,7 +2,7 @@
 # Created: 2017.12.03
 # Uvindu Wijesinghe
 #
-# Note: Code adapted from RCAutopilot
+# Note: Code adapted from Project Intelligent Car
 #
 # Description:
 # Receives input from a server computer. The input will be
