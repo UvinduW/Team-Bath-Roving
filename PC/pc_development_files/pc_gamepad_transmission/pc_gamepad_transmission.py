@@ -14,65 +14,81 @@
 # When you provide input on the gamepad, a scaled input value will
 # be sent to the Raspberry Pi.
 
+import socket
 import pygame
 from time import sleep
-import socket
 
-# Setup socket
+# Name the gamepad axes.
+axis_steer = 0
+axis_forwards = 4
+axis_reverse = 5
 
-# Client can connect through any network interface to port 8000
-host = "0.0.0.0"
+# Initialise flags and throttle value.
+forwards_moved = 0
+reverse_moved = 0
+reverse_engaged = 0
+throttle = "090"
+
+# Set IP and port.
+ip_address = "192.168.0.32" # Address of RPi
 port = 8000
 
-# Set up command server and wait for a connect
-print 'Waiting for Raspberry Pi Command Client'
-command_server_soc = socket.socket()  # Create a socket object
-command_server_soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-command_server_soc.bind((host, port))  # Bind to the port
+# Create a socket object (UDP) for message transmission.
+socket_control = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-command_server_soc.listen(0)  # Wait for client connection
-# Wait for client to connect
-command_client, addr = command_server_soc.accept()
-print "Raspberry Pi Connected! IP Address: "
-
-
-# Initialise PyGame for controller input
+# Setup the pygame library
 pygame.init()
 pygame.joystick.init()
 j_count = pygame.joystick.get_count()
 
-# Set the gamepad to be the first joystick found
-gamepad = pygame.joystick.Joystick(0)
+# Set the gamepad to be the first one found
+gamepad = pygame.joystick.Joystick(1)
 gamepad.init()
 
-# Loop to retrieve gamepad state and send it to Rpi
 while True:
-    # Update gamepad state
+    # Refresh the values from gamepad
     pygame.event.pump()
+    
+	# The gamepad analog axes and triggers provide a value between -1 and positive 1 depending on how
+	#  far they've been pushed or pressed. 0 is the center point for the thumbsticks or
+	#  half pressed for the shoulder triggers
+	
+	# The Scaling used should be changed as required by the motor controller chosen
+	
+    # Get the steering angle from axis0. Round, scale, and shift it, make it a three-char string.
+	# Scaled such that 0: full left; 90: centered; 180: full right
+    steer_angle = str(int(round(gamepad.get_axis(axis_steer)*90 + 90, 0))).zfill(3)
+    
+	# The Xbox triggers can be used for the throttle. With PyGame and the Xbox controller
+	#  the trigger reads -1 when fully pressed or 1 when not pressed at all. Due to how 
+	#  the library has been implemented, if you haven't pressed the trigger yet, its
+	#  default value is 0 - which is the value you would get if it is half pressed.
+	#  Some latching logic is used to only take the value of the trigger, once its been
+	#  pressed at least once.
+	
+    # Latch the forwards_moved flag if the forward gamepad axis ever moves from zero.
+    if gamepad.get_axis(axis_forwards) != 0:
+        forwards_moved = 1
 
-    # Get value from one of the gamepad axes
-    zero_axis_pos = gamepad.get_axis(0)
+    # Latch the reverse_moved flag if the reverse gamepad axis ever moves from zero.
+    if gamepad.get_axis(axis_reverse) != 0:
+        reverse_moved = 1
 
-    # Extract direction the stick was pushed
-    if zero_axis_pos >= 0:
-        # right-side
-        direction = 0
-    else:
-        # left-side
-        direction = 1
+    # Start calculating throttle values once the throttle has been moved once.
+	# Scaled such that 0: full speed forwards; 90: no throttle; 180: full speed reverse
+    if forwards_moved == 1:
+        # Read the forward axis and calculate a throttle value, rounded, scaled, shifted, stringed, extended.
+        throttle = str(90 - int(round(gamepad.get_axis(axis_forwards)*45 + 45, 0))).zfill(3)
 
-        # Convert value to a positive
-        zero_axis_pos *= -1
+    # If the reverse trigger is pressed at all, override throttle value with this value.
+    if reverse_moved == 1 and gamepad.get_axis(axis_reverse) != -1:
+        # Read the reverse axis and calculate a throttle value, rounded, scaled, shifted, stringed, extended.
+        throttle = str(90 + int(round(gamepad.get_axis(axis_reverse)*45 + 45, 0))).zfill(3)
 
-    # Scale value to 100 and make sure it is a whole number
-    scaled_input = int(100 * zero_axis_pos)
+    # Create a string to transmit over the socket by concatenating the two values.
+    transmission_string = throttle + steer_angle
 
-    # create 4 character string with first character indicating direction
-    transmission_string = str(direction) + str(scaled_input).zfill(3)
-
-    # Transmit the data to the Rpi
-    command_client.send(transmission_string)
-
-    # Print the values
-    print "Raw Value: " + str(zero_axis_pos) + "  Transmitted Value: " + transmission_string
+    # Print and send the string.
+    print transmission_string
+    socket_control.sendto(transmission_string, (ip_address, port))
     sleep(0.1)
