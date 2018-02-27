@@ -14,24 +14,25 @@
 # PyGame may not work properly on Windows.
 # Script was tested on Ubuntu 16.04 LTS
 
-import socket
-from time import sleep
 import serial
+import socket
 
-# Initialise everything
-# IP Address of server computer & port (change as needed)
-host = "192.168.0.22"
+# Set IP and port.
+ip_address = "192.168.0.22"
+local_address = "0.0.0.0"
 port = 8000
 
-print "Connecting to command server"
-command_client = socket.socket()  # Create a socket object
-command_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-command_client.connect((host, port))  # Bind to the port
-print  "Should be connected to command server"
-print ""
+# Create a socket object for control signal transmission.
+socket_control = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+# Bind the IP and port to the socket object.
+socket_control.bind((local_address, port))
 
 while True:
-    recvCommand = command_client.recv(1024)
-    print recvCommand
-
-    # Add code to scale and send commands to motors below:
+    # Receive control strings over the socket from the PC.
+    data, addr = socket_control.recvfrom(1024)
+    
+    # Print the messages
+    print "Message: ", data
+	
+	# Use the data to control motors
