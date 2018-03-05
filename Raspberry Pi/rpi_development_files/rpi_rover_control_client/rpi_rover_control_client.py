@@ -16,6 +16,7 @@
 
 import serial
 import socket
+import servo # importing servo library for scoop
 
 # Set IP and port.
 ip_address = "192.168.0.22"
