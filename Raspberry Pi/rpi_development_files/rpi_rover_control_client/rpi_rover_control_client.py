@@ -13,10 +13,26 @@
 # commands received will be printed on the terminal
 # PyGame may not work properly on Windows.
 # Script was tested on Ubuntu 16.04 LTS
-
+# Some code adapted from https://www.piborg.org/blog/thunderborg-getting-started
 import serial
 import socket
 import servo # importing servo library for scoop
+import ThunderBorg
+
+#Need to set the board address of each Thunderborg separately to addresses e.g. 10 11
+
+# Board #1, address 10, two left motors
+TB1 = ThunderBorg.ThunderBorg()
+TB1.i2cAddress = 10
+TB1.Init()
+TB1.ResetEpo()
+# Board #2, address 11, two right motors
+TB2 = ThunderBorg.ThunderBorg()
+TB2.i2cAddress = 11
+TB2.Init()
+TB2.ResetEpo()
+
+
 
 # Set IP and port.
 ip_address = "192.168.0.22"
@@ -37,3 +53,20 @@ while True:
     print "Message: ", data
 	
 	# Use the data to control motors
+
+#Extract throttle and steer_angle from data
+throttle = int(data[:3])
+steer_angle = int(data[-3:])
+power = (steer_angle - 90)/90 * (90 - throttle)/90 
+
+if steer_angle <= 90:
+	TB1.SetMotors(power * -1)
+	TB2.SetMotors(power)
+else
+        TB1.SetMotors(power)
+	TB2.SetMotors(power * -1)
+	
+        
+
+
+
