@@ -21,12 +21,12 @@ import ThunderBorg
 
 #Need to set the board address of each Thunderborg separately to addresses e.g. 10 11
 
-# Board #1, address 10, two left motors
+# Board #1, address 10, two left motors, Motor1: Front, Motor2: Rear
 TB1 = ThunderBorg.ThunderBorg()
 TB1.i2cAddress = 10
 TB1.Init()
 TB1.ResetEpo()
-# Board #2, address 11, two right motors
+# Board #2, address 11, two right motors, Motor1: Front, Motor2: Rear
 TB2 = ThunderBorg.ThunderBorg()
 TB2.i2cAddress = 11
 TB2.Init()
@@ -54,18 +54,21 @@ while True:
 	
 	# Use the data to control motors
 
-#Extract throttle and steer_angle from data
-throttle = int(data[:3])
-steer_angle = int(data[-3:])
-power = (steer_angle - 90)/90 * (90 - throttle)/90 
+    #Extract throttle and steer_angle from data
+    throttle = int(data[:3])
+    steer_angle = int(data[-3:])
+    #scale throttle and steer angle to range [-1,1], then multiply both by factor 1/2 to change each range to [-0.5,0.5], respectively.
+    scaled_throttle =  (1/2)*(90 - throttle)/90
+    scaled_steer_angle = (1/2)*(steer_angle - 90)/90
 
-if steer_angle <= 90:
-	TB1.SetMotors(power * -1)
-	TB2.SetMotors(power)
-else
-        TB1.SetMotors(power)
-	TB2.SetMotors(power * -1)
-	
+
+    left_power = scaled_throttle + scaled_steer_angle
+    right_power = scaled_throttle - scaled_steer_angle
+
+
+    TB1.SetMotors(left_power)
+    TB2.SetMotors(right_power)
+
         
 
 
