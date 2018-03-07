@@ -57,15 +57,20 @@ while True:
     #Extract throttle and steer_angle from data
     throttle = int(data[:3])
     steer_angle = int(data[-3:])
-    #scale throttle and steer angle to range [-1,1], then multiply both by factor 1/2 to change each range to [-0.5,0.5], respectively.
-    scaled_throttle =  (1/2)*(90 - throttle)/90
-    scaled_steer_angle = (1/2)*(steer_angle - 90)/90
+    #scale throttle and steer angle to range [-1,1]
+    scaled_throttle =  (90 - throttle)/90
+    scaled_steer_angle = (steer_angle - 90)/90
 
-
+	
     left_power = scaled_throttle + scaled_steer_angle
     right_power = scaled_throttle - scaled_steer_angle
+	
+#Scale left_power and right_power so both stay in range [-1,1]	
 
-
+    if (left_power >= 1) or (right_power <= -1)
+        left_power  *= 1/2
+        right_power *= 1/2
+	
     TB1.SetMotors(left_power)
     TB2.SetMotors(right_power)
 
