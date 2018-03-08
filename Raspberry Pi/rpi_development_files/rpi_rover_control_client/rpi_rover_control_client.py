@@ -18,6 +18,13 @@ import serial
 import socket
 import servo # importing servo library for scoop
 import ThunderBorg
+import RPI.GPIO as GPIO
+#Number the RPI IO pins using BOARD
+GPIO.setmode(GPIO.BOARD) 
+#Set the first pin as an output
+GPIO.setup(1,GPIO.OUT)
+#Create a PWM instance
+p = GPIO.PWM(1,50)
 
 #Need to set the board address of each Thunderborg separately to addresses e.g. 10 11
 
@@ -75,6 +82,9 @@ while True:
     TB2.SetMotors(right_power)
 
         
+    #Sampler Control Code
+    #Servo is neutral at 1.5ms, >1.5 Counter-Clockwise, <1.5 Clockwise
+  
 
 
-
+GPIO.cleanup() #Check if neccessary
