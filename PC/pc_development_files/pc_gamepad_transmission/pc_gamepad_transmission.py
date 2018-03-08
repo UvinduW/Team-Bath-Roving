@@ -45,6 +45,10 @@ j_count = pygame.joystick.get_count()
 gamepad = pygame.joystick.Joystick(1)
 gamepad.init()
 
+#Configure the second joystick to control the sampler
+sampler = pygame.joystick.Joystick(2)
+sampler.init()
+
 while True:
     # Refresh the values from gamepad
     pygame.event.pump()
