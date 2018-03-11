@@ -62,6 +62,11 @@ while True:
     # Get the steering angle from axis0. Round, scale, and shift it, make it a three-char string.
 	# Scaled such that 0: full left; 90: centered; 180: full right
     steer_angle = str(int(round(gamepad.get_axis(axis_steer)*90 + 90, 0))).zfill(3)
+
+    #Get the sampler input
+	#Scaled such that: 0 is max clockwise, 90 is neutral, and 180 is max anti-clockwise
+	#4th axis is the Y-axis of the right joystick
+    sampler_position = str(int(round(sampler.get_axis(4)*90 + 90, 0))).zfill(3)
     
 	# The Xbox triggers can be used for the throttle. With PyGame and the Xbox controller
 	#  the trigger reads -1 when fully pressed or 1 when not pressed at all. Due to how 
@@ -90,7 +95,7 @@ while True:
         throttle = str(90 + int(round(gamepad.get_axis(axis_reverse)*45 + 45, 0))).zfill(3)
 
     # Create a string to transmit over the socket by concatenating the two values.
-    transmission_string = throttle + steer_angle
+    transmission_string = throttle + steer_angle + sampler_position
 
     # Print and send the string.
     print transmission_string
