@@ -24,7 +24,7 @@ GPIO.setmode(GPIO.BOARD)
 #Set the first pin as an output
 GPIO.setup(1,GPIO.OUT)
 #Create a PWM instance
-p = GPIO.PWM(1,50)
+sampler = GPIO.PWM(1,50)
 
 #Need to set the board address of each Thunderborg separately to addresses e.g. 10 11
 
@@ -62,9 +62,11 @@ while True:
 	# Use the data to control motors
 
     #Extract throttle and steer_angle from data
-    throttle = int(data[:3])
-    steer_angle = int(data[-3:])
-    #scale throttle and steer angle to range [-1,1]
+    throttle = int(data[0:3])
+    steer_angle = int(data[3:6])
+    sampler_position = int(data[-3:])
+    #scale throttle, steer angle, and sampler position to range [-1,1]
+    scaled_sampler_position = (90 - sampler_position)/90 #1 is max clockise, -1 max anticlockwise
     scaled_throttle =  (90 - throttle)/90
     scaled_steer_angle = (steer_angle - 90)/90
 
@@ -84,7 +86,9 @@ while True:
         
     #Sampler Control Code
     #Servo is neutral at 1.5ms, >1.5 Counter-Clockwise, <1.5 Clockwise
-  
+   pulse_width = 1.5 - scaled_sampler_position
+   duty_cycle = pulse_width * 5 # this is the simplification of D = PW/T * 100 with f=1/T = 50Hz
+   sampler.ChangeDutyCycle(duty_cycle)
 
 
 GPIO.cleanup() #Check if neccessary
