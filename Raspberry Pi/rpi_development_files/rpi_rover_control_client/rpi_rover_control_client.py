@@ -24,7 +24,7 @@ GPIO.setmode(GPIO.BOARD)
 #Set the first pin as an output
 GPIO.setup(1,GPIO.OUT)
 #Create a PWM instance
-p = GPIO.PWM(1,50)
+sampler = GPIO.PWM(1,50)
 
 #Need to set the board address of each Thunderborg separately to addresses e.g. 10 11
 
