@@ -20,8 +20,9 @@ from time import sleep
 
 # Name the gamepad axes.
 axis_steer = 0
-axis_forwards = 4
-axis_reverse = 5
+axis_forwards = 5
+axis_reverse = 2
+axis_sampler = 4 # need to confirm
 
 # Initialise flags and throttle value.
 forwards_moved = 0
@@ -45,10 +46,6 @@ j_count = pygame.joystick.get_count()
 gamepad = pygame.joystick.Joystick(1)
 gamepad.init()
 
-#Configure the second joystick to control the sampler
-sampler = pygame.joystick.Joystick(2)
-sampler.init()
-
 while True:
     # Refresh the values from gamepad
     pygame.event.pump()
@@ -66,7 +63,7 @@ while True:
     #Get the sampler input
 	#Scaled such that: 0 is max clockwise, 90 is neutral, and 180 is max anti-clockwise
 	#4th axis is the Y-axis of the right joystick
-    sampler_position = str(int(round(sampler.get_axis(4)*90 + 90, 0))).zfill(3)
+    sampler_position = str(int(round(gamepad.get_axis(axis_sampler)*90 + 90, 0))).zfill(3)
     
 	# The Xbox triggers can be used for the throttle. With PyGame and the Xbox controller
 	#  the trigger reads -1 when fully pressed or 1 when not pressed at all. Due to how 
