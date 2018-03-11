@@ -62,8 +62,8 @@ while True:
 	# Use the data to control motors
 
     #Extract throttle and steer_angle from data
-    throttle = int(data[0:2])
-    steer_angle = int(data[3:5])
+    throttle = int(data[0:3])
+    steer_angle = int(data[3:6])
     sampler_position = int(data[-3:])
     #scale throttle, steer angle, and sampler position to range [-1,1]
     scaled_sampler_position = (90 - sampler_position)/90 #1 is max clockise, -1 max anticlockwise
