@@ -22,10 +22,10 @@ from time import sleep
 import io
 from PIL import Image
 
-# Start a socket listening for connections on 0.0.0.0:8000 (0.0.0.0 means
+# Start a socket listening for connections on 0.0.0.0:8001 (0.0.0.0 means
 # all interfaces)
 server_socket = socket.socket()
-server_socket.bind(('0.0.0.0', 8000))
+server_socket.bind(('0.0.0.0', 8001))
 server_socket.listen(0)
 
 # Accept a single connection and make a file-like object out of it
