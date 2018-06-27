@@ -23,6 +23,8 @@ from multiprocessing import Process
 import io
 from PIL import Image
 
+
+def video_stream()
 # Start a socket listening for connections on 0.0.0.0:8001 (0.0.0.0 means
 # all interfaces)
 server_socket = socket.socket()
@@ -31,7 +33,7 @@ server_socket.listen(0)
 
 # Accept a single connection and make a file-like object out of it
 connection = server_socket.accept()[0].makefile('rb')
-def video_stream()
+
     try:
         while True:
             # Read the length of the image as a 32-bit unsigned int. If the
@@ -55,34 +57,37 @@ def video_stream()
         server_socket.close()
 
 	##################################################################
-# Name the gamepad axes.
-axis_steer = 0
-axis_forwards = 4
-axis_reverse = 5
-
-# Initialise flags and throttle value.
-forwards_moved = 0
-reverse_moved = 0
-reverse_engaged = 0
-throttle = "090"
-
-# Set IP and port.
-ip_address = "192.168.0.32" # Address of RPi
-port = 8000
-
-# Create a socket object (UDP) for message transmission.
-socket_control = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-# Setup the pygame library
-pygame.init()
-pygame.joystick.init()
-j_count = pygame.joystick.get_count()
-
-# Set the gamepad to be the first one found
-gamepad = pygame.joystick.Joystick(1)
-gamepad.init()
 
 def rover_control()
+
+# Name the gamepad axes.
+    axis_steer = 0
+    axis_forwards = 4
+    axis_reverse = 5
+
+# Initialise flags and throttle value.
+    forwards_moved = 0
+    reverse_moved = 0
+    reverse_engaged = 0
+    throttle = "090"
+
+# Set IP and port.
+    ip_address = "192.168.0.32" # Address of RPi
+    port = 8000
+
+# Create a socket object (UDP) for message transmission.
+   socket_control = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+# Setup the pygame library
+   pygame.init()
+   pygame.joystick.init()
+   j_count = pygame.joystick.get_count()
+
+# Set the gamepad to be the first one found
+   gamepad = pygame.joystick.Joystick(1)
+   gamepad.init()
+
+
     while True:
         # Refresh the values from gamepad
         pygame.event.pump()
