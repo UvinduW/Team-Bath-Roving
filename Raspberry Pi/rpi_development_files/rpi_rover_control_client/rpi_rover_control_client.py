@@ -28,10 +28,10 @@ control_socket.bind(('0.0.0.0', port))
 print("waiting on port:", port)
 
     
-    #Number the RPI IO pins using BOARD
-GPIO.setmode(GPIO.BOARD) 
+    #Number the RPI IO pins using BCM
+GPIO.setmode(GPIO.BCM) 
 #Set the first pin as an output
-GPIO.setup(1,GPIO.OUT)
+GPIO.setup(18,GPIO.OUT)
 #Create a PWM instance
 sampler = GPIO.PWM(1,50)
 
